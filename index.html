@@ -107,9 +107,8 @@
         // --- 工具函数 ---
         const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-        // --- 数据定义 (保持原样，省略部分重复文本以节省空间，实际运行时请确保此处包含完整的 AGENTIC_THREATS 和 LLM_THREATS 数组) ---
-        // 注意：为了演示代码优化的效果，此处保留原变量名引用。请确保原有的 AGENTIC_THREATS 和 LLM_THREATS 数据完整存在于此处。
-
+        // --- 数据定义 ---
+        
         const AGENTIC_THREATS = [
             {
                 id: "ASI01",
@@ -317,7 +316,7 @@
             return { steps, activeStepIndex, pipelineLogs, isProcessing, setIsProcessing, addLog, updateStepStatus, reset, setSteps };
         };
 
-        // --- 统一模拟器布局组件 (极大减少重复代码) ---
+        // --- 统一模拟器布局组件 ---
         const StandardSimLayout = ({ defenses, controls, pipelineProps, children }) => {
             return (
                 <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 shadow-2xl">
@@ -833,8 +832,7 @@
                                         <div className={`prose prose-invert lg:prose-lg text-gray-300 p-8 rounded-xl border mb-8 ${category === 'agentic' ? 'bg-blue-950/10 border-blue-900/40 shadow-[0_0_30px_rgba(30,58,138,0.1)]' : 'bg-purple-950/10 border-purple-900/40 shadow-[0_0_30px_rgba(88,28,135,0.1)]'}`}><p className="leading-relaxed">{activeThreat.description}</p></div>
                                         {activeThreat.detailed_analysis && (<div className="mb-8 group"><h3 className="font-bold text-gray-200 mb-3 flex items-center text-lg"><Search className="w-5 h-5 mr-2 text-indigo-400 group-hover:text-indigo-300 transition-colors" /> 深度解析 (Deep Dive)</h3><p className="text-sm text-gray-300 leading-relaxed bg-indigo-950/20 p-6 rounded-lg border border-indigo-900/40 shadow-inner group-hover:border-indigo-800/60 transition-colors">{activeThreat.detailed_analysis}</p></div>)}
                                         {activeThreat.metaphor && (<div className="mb-10 group"><h3 className="font-bold text-gray-200 mb-3 flex items-center text-lg"><Lightbulb className="w-5 h-5 mr-2 text-yellow-500 group-hover:text-yellow-400 transition-colors" /> 形象比喻 (Metaphor)</h3><div className="bg-yellow-950/10 p-6 rounded-lg border border-yellow-900/30 group-hover:border-yellow-900/50 transition-colors relative overflow-hidden"><div className="absolute -right-4 -top-4 text-yellow-900/10 rotate-12 transform scale-150 pointer-events-none"><Lightbulb className="w-40 h-40" /></div><h4 className="font-bold text-yellow-500 text-base mb-2 relative z-10">{activeThreat.metaphor.title}</h4><p className="text-base text-yellow-100/80 italic border-l-2 border-yellow-700/50 pl-4 relative z-10">“{activeThreat.metaphor.content}”</p></div></div>)}
-                                        <div className="grid grid-cols-2 gap-6 mt-8">
-                                            <div className="border border-gray-700 p-5 rounded-lg bg-gray-900 hover:bg-gray-900/80 transition-colors hover-glow"><h3 className="font-bold text-gray-200 mb-3 flex items-center"><Lock className="w-4 h-4 mr-2 text-green-500" /> 为什么重要？</h3><p className="text-sm text-gray-400 leading-relaxed">{category === 'agentic' ? '代理系统（Agentic AI）拥有自主权、工具使用权和记忆。这些特性扩大了攻击面，使得传统的输入验证不足以防御复杂的逻辑攻击。' : '大语言模型（LLM）作为核心组件，其固有的不可预测性和易受操纵性（如 Prompt Injection）是整个生成式 AI 应用的安全基石。'}</p></div>
+                                        <div className="mt-8">
                                             <div className="border border-gray-700 p-5 rounded-lg bg-gray-900 hover:bg-gray-900/80 transition-colors hover-glow"><h3 className="font-bold text-gray-200 mb-3 flex items-center"><Network className="w-4 h-4 mr-2 text-purple-500" /> 关联风险</h3><p className="text-sm text-gray-400 leading-relaxed">{activeThreat.related_risks || (category === 'agentic' ? '该威胁通常与 LLM01 (Prompt Injection) 和 LLM06 (Excessive Agency) 结合，形成多步骤的复杂攻击链。' : '该威胁可能作为 Agentic AI 复杂攻击链的第一步。')}</p></div>
                                         </div>
                                     </div>
@@ -863,11 +861,6 @@
                                         <h2 className="text-xl font-bold mb-4 flex items-center gap-3 text-white border-l-4 border-green-500 pl-4"><Shield className="text-green-500" />防御与缓解措施</h2>
                                         <div className="grid gap-5 md:grid-cols-2">{activeThreat.defense && activeThreat.defense.map((item, index) => (<div key={index} className="flex items-start gap-3 bg-green-950/10 p-5 rounded-lg border border-green-900/30 hover:bg-green-900/20 hover:border-green-600/40 transition-all hover-glow cursor-default"><CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5 shadow-[0_0_10px_rgba(34,197,94,0.4)]" /><span className="text-green-100 text-sm font-bold tracking-wide">{item}</span></div>))}</div>
                                         {activeThreat.defenseDetails && (<div className="mt-10 space-y-8"><h3 className="text-lg font-bold flex items-center text-gray-200 border-b border-gray-700 pb-3"><Code className="w-5 h-5 mr-3 text-blue-400" />防御实现参考 (Implementation)</h3>{activeThreat.defenseDetails.map((detail, idx) => (<div key={idx} className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden shadow-lg hover:border-gray-600 transition-colors"><div className="bg-gray-850 px-5 py-3 border-b border-gray-700 flex justify-between items-center"><h4 className="font-bold text-sm text-blue-200">{detail.title}</h4><span className="text-[10px] font-bold bg-blue-900/30 text-blue-300 px-2 py-1 rounded border border-blue-800/50 uppercase tracking-wider">Python / Logic</span></div><div className="p-5"><p className="text-sm text-gray-400 mb-4">{detail.desc}</p><div className="bg-black rounded border border-gray-700 p-4 overflow-x-auto shadow-inner group relative"><div className="absolute top-2 right-2 flex gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div><div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div><div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div></div><pre className="text-xs font-mono text-green-400 whitespace-pre-wrap selection:bg-green-900/60 pt-2">{detail.code}</pre></div></div></div>))}</div>)}
-                                        <div className="mt-10 bg-gray-900 text-gray-300 p-8 rounded-xl border border-gray-700 hover-glow">
-                                            <h3 className="text-lg font-bold mb-4 flex items-center text-white"><Terminal className="w-5 h-5 mr-2 text-orange-500" /> 开发者行动指南</h3>
-                                            <p className="text-sm mb-5 text-gray-400">在设计 {category === 'agentic' ? '代理系统' : 'LLM 应用'} 时，请始终坚持"零信任"原则。</p>
-                                            <ul className="space-y-3 text-sm text-gray-400 font-mono"><li className="flex items-center"><ArrowRight className="w-3 h-3 text-orange-500 mr-2" /> 始终对工具调用实施鉴权 <span className="text-orange-400 ml-1 font-bold">(Authentication)</span></li><li className="flex items-center"><ArrowRight className="w-3 h-3 text-orange-500 mr-2" /> 对所有外部数据源（RAG、Web）进行清洗 <span className="text-orange-400 ml-1 font-bold">(Sanitization)</span></li><li className="flex items-center"><ArrowRight className="w-3 h-3 text-orange-500 mr-2" /> 为关键操作设置人工确认的"护栏" <span className="text-orange-400 ml-1 font-bold">(Human-in-the-Loop)</span></li></ul>
-                                        </div>
                                     </div>
                                 )}
                             </div>
