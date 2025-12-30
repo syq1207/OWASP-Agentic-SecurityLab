@@ -101,7 +101,7 @@
         import React, { useState, useEffect, useRef, useMemo } from 'https://esm.sh/react@18.2.0';
         import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
         import {
-            Shield, AlertTriangle, Terminal, Lock, Users, GitBranch, Database, Network, Activity, Eye, Bot, Play, CheckCircle, XCircle, Server, FileCode, UserCheck, ArrowRight, Check, X, Search, Code, FileText, Gavel, Fingerprint, Box, Loader, Lightbulb, List, Globe, Key, Settings, Cpu, FileWarning, Workflow, HardDrive, Smartphone, Monitor, Zap, MessageSquare, Copy, RefreshCw, StopCircle, Snail, Unlock
+            Shield, AlertTriangle, Terminal, Lock, Users, GitBranch, Database, Network, Activity, Eye, Bot, Play, CheckCircle, XCircle, Server, FileCode, UserCheck, ArrowRight, Check, X, Search, Code, FileText, Gavel, Fingerprint, Box, Loader, Lightbulb, List, Globe, Key, Settings, Cpu, FileWarning, Workflow, HardDrive, Smartphone, Monitor, Zap, MessageSquare, Copy, RefreshCw, StopCircle, Snail, Unlock, Send
         } from 'https://esm.sh/lucide-react@0.344.0';
 
         // --- 工具函数 ---
@@ -732,28 +732,13 @@ sample = {
             default: { container: "bg-gray-900 border-gray-700 text-gray-600", icon: "text-gray-600", text: "text-gray-500" }
         };
 
-        const getNodeStyles = (status) => NODE_STYLES[status] || NODE_STYLES.default;
-
-        const AgentPipeline = ({ steps, activeStepIndex, pipelineLogs }) => {
-            const logEndRef = useRef(null);
-            useEffect(() => { logEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [pipelineLogs]);
+        const AgentPipeline = ({ steps, activeStepIndex }) => {
+            const getNodeStyles = (status) => NODE_STYLES[status] || NODE_STYLES.default;
 
             return (
-                <div className="mt-8 border-t border-gray-700 pt-6 select-none relative">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-sm font-bold text-gray-200 flex items-center uppercase tracking-wider">
-                            <Activity className="w-4 h-4 mr-2 text-green-500 animate-pulse" />执行流程视图 (Execution Pipeline)
-                        </h3>
-                        {/* 状态指示器 */}
-                        <div className="flex gap-4 text-[10px] items-center">
-                            <span className="flex items-center text-gray-400"><div className="w-2 h-2 rounded-full bg-gray-700 mr-2"></div>IDLE</span>
-                            <span className="flex items-center text-blue-400"><div className="w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse"></div>ACTIVE</span>
-                            <span className="flex items-center text-green-400"><div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>SECURE</span>
-                            <span className="flex items-center text-red-400"><div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>COMPROMISED</span>
-                        </div>
-                    </div>
+                <div className="px-2 overflow-x-auto pb-8 pt-4 custom-scrollbar min-h-[140px] flex items-center">
                     {/* 流程图区域 */}
-                    <div className="flex items-center justify-between mb-8 relative px-2 overflow-x-auto pb-6 pt-2 custom-scrollbar min-h-[120px]">
+                    <div className="flex items-center justify-between relative w-full min-w-max">
                         {steps.map((step, idx) => {
                             const styles = getNodeStyles(step.status);
                             const Icon = step.icon || Box;
@@ -764,9 +749,9 @@ sample = {
 
                             return (
                                 <React.Fragment key={step.id}>
-                                    <div className="flex flex-col items-center min-w-[80px] relative group z-10">
+                                    <div className="flex flex-col items-center min-w-[80px] relative group z-10 mx-2">
                                         {/* 节点主体 */}
-                                        <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center transition-all duration-500 ${styles.container} ${styles.glow || ''}`}>
+                                        <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center transition-all duration-500 shadow-md ${styles.container} ${styles.glow || ''}`}>
                                             {step.status === 'active' ? <Loader className="w-7 h-7 animate-spin" /> : <Icon className={`w-7 h-7 ${styles.icon}`} />}
                                         </div>
 
@@ -786,7 +771,7 @@ sample = {
 
                                     {/* 连接线 */}
                                     {idx < steps.length - 1 && (
-                                        <div className="flex-1 h-1 bg-gray-800 mx-2 relative overflow-hidden rounded-full">
+                                        <div className="flex-1 h-1 bg-gray-800 mx-1 relative overflow-hidden rounded-full min-w-[40px]">
                                             {/* 基础连接线 */}
                                             <div className={`absolute inset-0 transition-all duration-500 ${step.status === 'blocked' ? 'bg-red-500/20' :
                                                 isCompromisedFlow ? 'bg-red-900/50' :
@@ -812,54 +797,43 @@ sample = {
                             );
                         })}
                     </div>
+                </div>
+            );
+        };
 
-                    {/* 日志终端 */}
-                    <div className="bg-[#0c0c0c] rounded-lg border border-gray-800 w-full relative group overflow-hidden shadow-inner">
-                        {/* 终端头部 */}
-                        <div className="flex items-center justify-between px-3 py-1.5 bg-[#1a1a1a] border-b border-gray-800">
-                            <div className="flex items-center gap-2">
-                                <Terminal className="w-3 h-3 text-green-500" />
-                                <span className="text-xs text-gray-400 font-mono">SYSTEM_LOGS</span>
-                            </div>
-                            <div className="flex gap-1.5">
-                                <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-                                <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
+        const LogPanel = ({ logs }) => {
+            const logEndRef = useRef(null);
+            useEffect(() => { logEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [logs]);
+
+            return (
+                <div className="bg-[#0c0c0c] p-4 font-mono text-xs h-[200px] overflow-y-auto custom-scrollbar relative">
+                    {/* CRT Effect */}
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]"></div>
+
+                    {logs.length === 0 && (
+                        <div className="text-gray-600 italic flex items-center gap-2 mt-2">
+                            <span className="text-green-500">➜</span> System ready...
+                        </div>
+                    )}
+                    {logs.map((log, i) => (
+                        <div key={i} className={`mb-2 font-medium break-all flex items-start gap-2 ${log.type === 'error' ? 'text-red-400 border-l-2 border-red-500 pl-2' :
+                            log.type === 'success' ? 'text-green-400' :
+                                log.type === 'warning' ? 'text-yellow-300' :
+                                    log.type === 'blocked' ? 'text-orange-400 border-l-2 border-orange-500 pl-2' :
+                                        log.type === 'info' ? 'text-blue-300' : 'text-gray-400'
+                            }`}>
+                            <span className="opacity-40 min-w-[50px] text-[9px] pt-0.5 select-none text-gray-500">[{new Date().toLocaleTimeString('zh-CN', { hour12: false })}]</span>
+                            <div className="flex-1">
+                                <span className={`font-bold mr-2 px-1 rounded text-[9px] inline-flex items-center uppercase tracking-wider ${log.type === 'error' ? 'bg-red-900/30 text-red-300' :
+                                    log.type === 'blocked' ? 'bg-orange-900/30 text-orange-300' :
+                                        log.type === 'success' ? 'bg-green-900/30 text-green-300' :
+                                            'bg-gray-800 text-gray-400'
+                                    }`}>{log.source}</span>
+                                <span>{log.message}</span>
                             </div>
                         </div>
-
-                        {/* 终端内容 */}
-                        <div className="p-4 font-mono text-xs h-[180px] overflow-y-auto custom-scrollbar relative">
-                            {/* CRT 扫描线效果 */}
-                            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]"></div>
-
-                            {pipelineLogs.length === 0 && (
-                                <div className="text-gray-600 italic animate-pulse flex items-center gap-2">
-                                    <span className="text-green-500">➜</span> System ready. Waiting for trigger...
-                                </div>
-                            )}
-
-                            {pipelineLogs.map((log, i) => (
-                                <div key={i} className={`mb-2 font-medium break-all flex items-start gap-2 ${log.type === 'error' ? 'text-red-400 bg-red-950/10 -mx-4 px-4 py-1 border-l-2 border-red-500' :
-                                    log.type === 'success' ? 'text-green-400' :
-                                        log.type === 'warning' ? 'text-yellow-300' :
-                                            log.type === 'blocked' ? 'text-orange-400 bg-orange-950/10 -mx-4 px-4 py-1 border-l-2 border-orange-500' :
-                                                log.type === 'info' ? 'text-blue-300' : 'text-gray-400'
-                                    }`}>
-                                    <span className="opacity-50 min-w-[60px] text-[10px] pt-0.5">[{new Date().toLocaleTimeString('zh-CN', { hour12: false })}]</span>
-                                    <div className="flex-1">
-                                        <span className={`font-bold mr-2 px-1.5 rounded text-[10px] h-4 inline-flex items-center ${log.type === 'error' ? 'bg-red-900/40 text-red-300' :
-                                            log.type === 'blocked' ? 'bg-orange-900/40 text-orange-300' :
-                                                log.type === 'success' ? 'bg-green-900/40 text-green-300' :
-                                                    'bg-gray-800 text-gray-300'
-                                            }`}>{log.source}</span>
-                                        <span>{log.message}</span>
-                                    </div>
-                                </div>
-                            ))}
-                            <div ref={logEndRef} />
-                        </div>
-                    </div>
+                    ))}
+                    <div ref={logEndRef} />
                 </div>
             );
         };
@@ -894,77 +868,107 @@ sample = {
             return { steps, setSteps, activeStepIndex, pipelineLogs, isProcessing, setIsProcessing, addLog, updateStepStatus, reset, nextPhase };
         };
 
-        // --- 统一模拟器布局组件 ---
+        // --- 统一模拟器布局组件 (StandardSimLayout) ---
         const StandardSimLayout = ({ defenses, controls, pipelineProps, children }) => {
             return (
-                <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 shadow-2xl relative overflow-hidden">
-                    {/* 背景装饰 */}
-                    <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-gray-800 to-transparent left-12 top-0 opacity-20"></div>
-
-                    {/* 防御配置区 */}
-                    <div className="mb-6 bg-[#0B0D12] rounded border-l-4 border-l-green-600 border-y border-r border-gray-800/50 shadow-inner relative overflow-hidden group">
-                        <div className="bg-gray-900/50 px-4 py-2 border-b border-gray-800 flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-gray-200 flex items-center tracking-wide">
-                                <Shield className="w-4 h-4 mr-2 text-green-500" />
-                                防御层配置 <span className="text-gray-600 ml-1 font-normal">(Defense Layer)</span>
-                            </h3>
-                            <div className="flex gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500/20"></div>
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500/40"></div>
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500/60"></div>
+                <div className="bg-gray-950 p-1 rounded-xl">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* 1. 防御层配置 (Defense Layer) */}
+                        <div className="bg-[#0f1117] rounded-xl border border-gray-800 shadow-xl overflow-hidden flex flex-col h-full">
+                            <div className="bg-gray-900/50 px-5 py-3 border-b border-gray-800 flex items-center gap-2.5">
+                                <div className="p-1.5 bg-green-900/30 rounded-md border border-green-500/20">
+                                    <Shield className="w-4 h-4 text-green-400" />
+                                </div>
+                                <span className="text-sm font-bold text-gray-200 tracking-wide">防御层配置</span>
+                            </div>
+                            <div className="p-5 grid gap-4 overflow-y-auto max-h-[300px] custom-scrollbar">
+                                {defenses.map((d, i) => (
+                                    <DefenseToggle key={i} label={d.label} enabled={d.state[d.key]} onChange={v => d.state.set(p => ({ ...p, [d.key]: v }))} description={d.desc} />
+                                ))}
                             </div>
                         </div>
-                        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                            {defenses.map((d, i) => (
-                                <DefenseToggle key={i} label={d.label} enabled={d.state[d.key]} onChange={v => d.state.set(p => ({ ...p, [d.key]: v }))} description={d.desc} />
-                            ))}
-                        </div>
-                        {/* 装饰水印 */}
-                        <div className="absolute -right-6 -bottom-6 opacity-[0.03] transform rotate-12 transition-opacity group-hover:opacity-[0.05]">
-                            <Shield className="w-32 h-32 text-green-500" />
-                        </div>
-                    </div>
 
-                    {/* 交互控制区 */}
-                    <div className="relative z-10">
-                        {children}
-
-                        {/* 控制按钮组 */}
-                        <div className="mt-4">
-                            {controls.type === 'chat' ? (
-                                <div className="flex flex-col gap-3">
-                                    <div className="flex gap-3">
-                                        <AutoResizeTextarea value={controls.input} onChange={controls.setInput} placeholder="输入指令或 Prompt..." disabled={pipelineProps.isProcessing} presets={controls.presets} />
-                                        <button onClick={controls.onSend} disabled={pipelineProps.isProcessing} className="bg-gradient-to-br from-blue-700 to-blue-900 hover:from-blue-600 hover:to-blue-800 text-white px-6 rounded font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-fit py-3 self-start border border-blue-500/30 transition-all active:scale-95 flex items-center justify-center min-w-[100px]">
-                                            {pipelineProps.isProcessing ? <Loader className="w-5 h-5 animate-spin" /> : "发送"}
-                                        </button>
+                        {/* 2. 模拟攻击 (Attack Simulation) */}
+                        <div className="bg-[#0f1117] rounded-xl border border-gray-800 shadow-xl overflow-hidden flex flex-col h-full">
+                            <div className="bg-gray-900/50 px-5 py-3 border-b border-gray-800 flex items-center gap-2.5">
+                                <div className="p-1.5 bg-red-900/30 rounded-md border border-red-500/20">
+                                    <Zap className="w-4 h-4 text-red-400" />
+                                </div>
+                                <span className="text-sm font-bold text-gray-200 tracking-wide">模拟攻击</span>
+                            </div>
+                            <div className="p-5 flex flex-col h-full gap-4">
+                                {children && (
+                                    <div className="flex-1 overflow-y-auto min-h-[120px] max-h-[300px] custom-scrollbar rounded-lg bg-black/40 border border-gray-800/60 p-3 shadow-inner">
+                                        {children}
                                     </div>
-                                    <div className="text-[10px] text-gray-500 font-mono flex justify-end">Press Enter to send</div>
-                                </div>
-                            ) : controls.customButtons ? (
-                                // 支持自定义多按钮 (用于多步攻击)
-                                <div className="flex gap-4">
-                                    {controls.customButtons.map((btn, idx) => (
-                                        <button key={idx} onClick={btn.onClick} disabled={btn.disabled || pipelineProps.isProcessing}
-                                            className={`flex-1 py-3 rounded font-bold uppercase tracking-widest shadow-lg transition-all disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-2 border border-white/5 relative overflow-hidden group ${btn.className || 'bg-gray-800 hover:bg-gray-700'}`}>
-                                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            {pipelineProps.isProcessing && btn.active ? <Loader className="w-5 h-5 animate-spin" /> : (btn.icon || <Play className="w-5 h-5" />)}
-                                            {btn.label}
+                                )}
+
+                                <div className={!children ? "mt-auto" : ""}>
+                                    {controls.type === 'chat' ? (
+                                        <div className="flex flex-col gap-3">
+                                            <div className="flex gap-3">
+                                                <AutoResizeTextarea value={controls.input} onChange={controls.setInput} placeholder="输入指令或 Prompt..." disabled={pipelineProps.isProcessing} presets={controls.presets} />
+                                                <button onClick={controls.onSend} disabled={pipelineProps.isProcessing} className="bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-5 rounded-lg font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center min-w-[70px] border border-blue-500/30">
+                                                    {pipelineProps.isProcessing ? <Loader className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                                                </button>
+                                            </div>
+                                            <div className="text-[10px] text-gray-600 font-mono text-right">Press Enter to send</div>
+                                        </div>
+                                    ) : controls.customButtons ? (
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {controls.customButtons.map((btn, idx) => (
+                                                <button key={idx} onClick={btn.onClick} disabled={btn.disabled || pipelineProps.isProcessing}
+                                                    className={`py-3 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg transition-all disabled:opacity-50 active:scale-95 flex items-center justify-center gap-2 border border-white/5 relative overflow-hidden group ${btn.className || 'bg-gray-800 hover:bg-gray-700'}`}>
+                                                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                                    {pipelineProps.isProcessing && btn.active ? <Loader className="w-4 h-4 animate-spin" /> : (btn.icon)}
+                                                    {btn.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <button onClick={controls.onRun} disabled={pipelineProps.isProcessing} className={`w-full text-white py-3.5 rounded-lg font-bold uppercase tracking-widest shadow-lg transition-all disabled:opacity-50 active:scale-95 flex items-center justify-center gap-2 border border-white/10 ${controls.btnClass || 'bg-red-800 hover:bg-red-700'}`}>
+                                            {pipelineProps.isProcessing ? <Loader className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
+                                            {controls.btnLabel || '模拟攻击'}
                                         </button>
-                                    ))}
+                                    )}
                                 </div>
-                            ) : (
-                                <button onClick={controls.onRun} disabled={pipelineProps.isProcessing} className={`w-full text-white py-3 rounded font-bold uppercase tracking-widest shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 relative overflow-hidden group ${controls.btnClass || 'bg-red-800 hover:bg-red-700'}`}>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                                    {pipelineProps.isProcessing ? <Loader className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
-                                    {controls.btnLabel || '模拟攻击'}
-                                </button>
-                            )}
+                            </div>
+                        </div>
+
+                        {/* 3. 执行流程视图 (Execution Flow) */}
+                        <div className="col-span-1 lg:col-span-2 bg-[#0f1117] rounded-xl border border-gray-800 shadow-xl overflow-hidden">
+                            <div className="bg-gray-900/50 px-5 py-3 border-b border-gray-800 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="p-1.5 bg-blue-900/30 rounded-md border border-blue-500/20">
+                                        <Activity className="w-4 h-4 text-blue-400" />
+                                    </div>
+                                    <span className="text-sm font-bold text-gray-200 tracking-wide">执行流程视图</span>
+                                </div>
+                                <div className="flex gap-4 text-[10px] font-mono opacity-80">
+                                    <span className="flex items-center text-gray-500"><div className="w-1.5 h-1.5 rounded-full bg-gray-600 mr-2"></div>IDLE</span>
+                                    <span className="flex items-center text-blue-400"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 animate-pulse"></div>ACTIVE</span>
+                                    <span className="flex items-center text-green-400"><div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2"></div>SECURE</span>
+                                    <span className="flex items-center text-red-400"><div className="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></div>COMPROMISED</span>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gradient-to-b from-gray-950 to-[#0f1117]">
+                                <AgentPipeline steps={pipelineProps.steps} activeStepIndex={pipelineProps.activeStepIndex} />
+                            </div>
+                        </div>
+
+                        {/* 4. System Logs */}
+                        <div className="col-span-1 lg:col-span-2 bg-[#0f1117] rounded-xl border border-gray-800 shadow-xl overflow-hidden">
+                            <div className="bg-gray-900/50 px-5 py-3 border-b border-gray-800 flex items-center gap-2.5">
+                                <div className="p-1.5 bg-yellow-900/30 rounded-md border border-yellow-500/20">
+                                    <Terminal className="w-4 h-4 text-yellow-400" />
+                                </div>
+                                <span className="text-sm font-bold text-gray-200 tracking-wide">System_logs</span>
+                            </div>
+                            <div className="p-0 border-t border-gray-900">
+                                <LogPanel logs={pipelineProps.pipelineLogs} />
+                            </div>
                         </div>
                     </div>
-
-                    {/* 流水线视图 */}
-                    <AgentPipeline steps={pipelineProps.steps} activeStepIndex={pipelineProps.activeStepIndex} pipelineLogs={pipelineProps.pipelineLogs} />
                 </div>
             );
         };
