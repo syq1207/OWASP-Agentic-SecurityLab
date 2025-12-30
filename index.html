@@ -101,7 +101,7 @@
         import React, { useState, useEffect, useRef, useMemo } from 'https://esm.sh/react@18.2.0';
         import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
         import {
-            Shield, AlertTriangle, Terminal, Lock, Users, GitBranch, Database, Network, Activity, Eye, Bot, Play, CheckCircle, XCircle, Server, FileCode, UserCheck, ArrowRight, Check, X, Search, Code, FileText, Gavel, Fingerprint, Box, Loader, Lightbulb, List, Globe, Key, Settings, Cpu, FileWarning, Workflow, HardDrive, Smartphone, Monitor, Zap, MessageSquare, Copy, RefreshCw, StopCircle
+            Shield, AlertTriangle, Terminal, Lock, Users, GitBranch, Database, Network, Activity, Eye, Bot, Play, CheckCircle, XCircle, Server, FileCode, UserCheck, ArrowRight, Check, X, Search, Code, FileText, Gavel, Fingerprint, Box, Loader, Lightbulb, List, Globe, Key, Settings, Cpu, FileWarning, Workflow, HardDrive, Smartphone, Monitor, Zap, MessageSquare, Copy, RefreshCw, StopCircle, Snail, Unlock
         } from 'https://esm.sh/lucide-react@0.344.0';
 
         // --- 工具函数 ---
@@ -1594,7 +1594,7 @@
                     controls={{
                         type: 'custom',
                         customButtons: [
-                            { label: "模拟服务故障 (Hang)", onClick: () => run('fail'), icon: <Slug className="w-5 h-5 text-orange-400" />, className: "bg-orange-900/50 hover:bg-orange-800/80" },
+                            { label: "模拟服务故障 (Hang)", onClick: () => run('fail'), icon: <Snail className="w-5 h-5 text-orange-400" />, className: "bg-orange-900/50 hover:bg-orange-800/80" },
                             { label: "正常运行 (Healthy)", onClick: () => run('normal'), icon: <Activity className="w-5 h-5 text-green-400" />, className: "bg-green-900/50 hover:bg-green-800/80" }
                         ]
                     }}
